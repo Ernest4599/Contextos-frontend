@@ -581,7 +581,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const aboutRow = document.getElementById('aboutRow');
   if (aboutRow){
     aboutRow.addEventListener('click', () => {
-      alert('ContextOS v1.0.0\n\nTurn any AI conversation into a reusable Context Package.\n\nOffline-first. No account required. Your conversations are never stored.');
+      alert('ContextOS v1.0.0\n\nTurn any AI conversation into a reusable Context Package.\n\nPrivate by design. No account required. Your conversations are never stored.');
     });
   }
 
