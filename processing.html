@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ContextOS — Processing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="proj-header">
+  <span class="icon-btn" aria-hidden="true" style="visibility:hidden">
+    <svg viewBox="0 0 24 24" width="22" height="22"></svg>
+  </span>
+  <span class="proj-header-title">Processing</span>
+  <span class="header-spacer" aria-hidden="true"></span>
+</header>
+
+<main class="processing-main">
+  <h1 class="processing-title">Analyzing your conversation...</h1>
+  <p class="processing-sub">This will only take a few seconds.</p>
+
+  <div class="progress-ring-wrap">
+    <svg viewBox="0 0 200 200" width="220" height="220">
+      <circle cx="100" cy="100" r="88" fill="none" stroke="#1c2230" stroke-width="14"/>
+      <circle id="progressCircle" cx="100" cy="100" r="88" fill="none" stroke="#2f6bff" stroke-width="14"
+              stroke-linecap="round" stroke-dasharray="553" stroke-dashoffset="553"
+              transform="rotate(-90 100 100)"/>
+    </svg>
+    <span class="progress-percent" id="progressPercent">0%</span>
+  </div>
+
+  <ul class="checklist" id="checklist">
+    <li class="checklist-item" data-step="0"><span class="checklist-icon"></span>Reading conversation</li>
+    <li class="checklist-item" data-step="1"><span class="checklist-icon"></span>Detecting topics</li>
+    <li class="checklist-item" data-step="2"><span class="checklist-icon"></span>Extracting decisions</li>
+    <li class="checklist-item" data-step="3"><span class="checklist-icon"></span>Finding tasks</li>
+    <li class="checklist-item" data-step="4"><span class="checklist-icon"></span>Identifying constraints</li>
+    <li class="checklist-item" data-step="5"><span class="checklist-icon"></span>Building Context Package</li>
+    <li class="checklist-item" data-step="6"><span class="checklist-icon"></span>Deleting raw conversation...</li>
+  </ul>
+
+  <div class="processing-note">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="8.01"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
+    <span>Raw conversation will be permanently deleted after processing.</span>
+  </div>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>

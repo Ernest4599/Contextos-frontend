@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ContextOS — Import</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="proj-header">
+  <a href="home.html" class="icon-btn" aria-label="Back">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <span class="proj-header-title">Import</span>
+  <span class="header-spacer" aria-hidden="true"></span>
+</header>
+
+<main class="import-main">
+  <p class="import-subtitle">Choose how you want to import</p>
+
+  <button class="import-option" id="optShareLink" data-target="panelShareLink">
+    <span class="import-option-icon">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.07 0l2.83-2.83a5 5 0 00-7.07-7.07L11.5 4.5"/><path d="M14 11a5 5 0 00-7.07 0L4.1 13.83a5 5 0 007.07 7.07L12.5 19.5"/></svg>
+    </span>
+    <span class="import-option-text">
+      <span class="import-option-title">Share Link</span>
+      <span class="import-option-sub">Import from a public share link</span>
+    </span>
+    <span class="import-option-arrow">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.07 0l2.83-2.83a5 5 0 00-7.07-7.07L11.5 4.5"/><path d="M14 11a5 5 0 00-7.07 0L4.1 13.83a5 5 0 007.07 7.07L12.5 19.5"/></svg>
+    </span>
+  </button>
+
+  <div class="import-panel" id="panelShareLink" hidden>
+    <input type="url" class="import-input" id="linkInput" placeholder="Paste a share link (chat.openai.com/share/...)">
+  </div>
+
+  <button class="import-option" id="optPaste" data-target="panelPaste">
+    <span class="import-option-icon">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9aa2b1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 4H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-3"/></svg>
+    </span>
+    <span class="import-option-text">
+      <span class="import-option-title">Paste Conversation</span>
+      <span class="import-option-sub">Paste the full conversation</span>
+    </span>
+    <span class="import-option-arrow">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6M9 16h4"/><rect x="5" y="4" width="14" height="17" rx="2"/></svg>
+    </span>
+  </button>
+
+  <div class="import-panel" id="panelPaste" hidden>
+    <textarea class="import-textarea" id="pasteInput" rows="6" placeholder="Paste your conversation here..."></textarea>
+  </div>
+
+  <button class="import-option" id="optUpload" data-target="panelUpload">
+    <span class="import-option-icon">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9aa2b1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><polyline points="7 8 12 3 17 8"/><path d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3"/></svg>
+    </span>
+    <span class="import-option-text">
+      <span class="import-option-title">Upload File</span>
+      <span class="import-option-sub">Upload exported chat or text file</span>
+    </span>
+    <span class="import-option-arrow">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><polyline points="7 8 12 3 17 8"/><path d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3"/></svg>
+    </span>
+  </button>
+
+  <div class="import-panel" id="panelUpload" hidden>
+    <div class="import-dropzone" id="dropzone">
+      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><polyline points="7 8 12 3 17 8"/><path d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3"/></svg>
+      <p class="import-dropzone-title">Drag &amp; drop your file here</p>
+      <p class="import-dropzone-sub">.txt, .md, .html, .json supported</p>
+      <input type="file" id="fileInput" accept=".txt,.md,.html,.json" hidden>
+    </div>
+    <p class="import-filename" id="fileName"></p>
+  </div>
+
+  <button class="generate-btn import-continue" id="continueBtn" disabled>Analyze Conversation</button>
+
+  <p class="import-note">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
+    All processing happens locally on your device. Your data never leaves your device.
+  </p>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>

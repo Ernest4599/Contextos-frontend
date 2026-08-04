@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ContextOS — Sign In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<header class="proj-header">
+  <a href="home.html" class="icon-btn" aria-label="Back">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <span class="proj-header-title">Account</span>
+  <span class="header-spacer" aria-hidden="true"></span>
+</header>
+
+<main class="auth-main">
+
+  <div class="auth-intro">
+    <svg width="40" height="40" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M85 34C77.5 25.8 66.9 21 55 21C32.4 21 14 39.4 14 62C14 84.6 32.4 103 55 103C66.9 103 77.5 98.2 85 90"
+            stroke="#f5f6f8" stroke-width="13" stroke-linecap="round"/>
+      <rect x="95" y="50" width="14" height="32" rx="7" fill="#2f6bff"/>
+    </svg>
+    <h1 class="auth-title">Optional account</h1>
+    <p class="auth-sub">Signing in isn't required — ContextOS fully works with just a device license. Create an account only if you want your Projects and Packages to sync across devices.</p>
+  </div>
+
+  <!-- Logged-out state -->
+  <div id="authForm">
+    <div class="auth-tabs">
+      <button class="auth-tab auth-tab--active" data-mode="signin">Sign In</button>
+      <button class="auth-tab" data-mode="signup">Create Account</button>
+    </div>
+
+    <div class="qp-field">
+      <label class="qp-label" for="authEmail">Email</label>
+      <input type="email" class="import-input" id="authEmail" placeholder="you@example.com">
+    </div>
+    <div class="qp-field">
+      <label class="qp-label" for="authPassword">Password</label>
+      <input type="password" class="import-input" id="authPassword" placeholder="At least 8 characters">
+    </div>
+
+    <p class="auth-error" id="authError" hidden></p>
+
+    <button class="generate-btn" id="authSubmitBtn">Sign In</button>
+  </div>
+
+  <!-- Logged-in state -->
+  <div id="loggedInState" hidden>
+    <div class="settings-row">
+      <span class="settings-icon">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+      </span>
+      <span class="settings-text">
+        <span class="settings-label">Signed in as</span>
+        <span class="settings-value" id="loggedInEmail">—</span>
+      </span>
+    </div>
+
+    <div class="qp-field">
+      <p class="qp-hint">Already bought Pro on this device? Link that license to your account so it shows up here too — the device it's on keeps working exactly as before.</p>
+      <input type="text" class="import-input" id="linkLicenseId" placeholder="License ID (CTXOS-XXXX-XXXX-XXXX)" style="margin-bottom:10px;">
+      <input type="text" class="import-input" id="linkRecoveryKey" placeholder="Recovery Key">
+    </div>
+    <button class="generate-btn" id="linkLicenseBtn" style="margin-bottom:14px;">Link License to Account</button>
+
+    <button class="action-btn" id="signOutBtn">Sign Out</button>
+  </div>
+
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
