@@ -258,7 +258,7 @@ const SUPABASE_ANON_KEY = 'sb_publishable_tyrQ-eWa28FrOR217z8HcA_lO8_5XNi';
         const rawInput = localStorage.getItem('contextos_input') || '';
 
         // ⚠️ Replace this URL with your real Render backend URL once deployed
-        const BACKEND_URL = 'https://contextos-backend.onrender.com';
+        const BACKEND_URL = 'https://contextos-apc7.onrender.com';
 
         fetch(`${BACKEND_URL}/api/analyze`, {
           method: 'POST',
@@ -422,7 +422,7 @@ const SUPABASE_ANON_KEY = 'sb_publishable_tyrQ-eWa28FrOR217z8HcA_lO8_5XNi';
           return;
         }
 
-        const BACKEND_URL = 'https://contextos-backend.onrender.com'; // ⚠️ same URL as elsewhere — keep in sync
+        const BACKEND_URL = 'https://contextos-apc7.onrender.com'; // ⚠️ same URL as elsewhere — keep in sync
 
         try {
           const res = await fetch(`${BACKEND_URL}/api/account/link-license`, {
@@ -525,7 +525,7 @@ const SUPABASE_ANON_KEY = 'sb_publishable_tyrQ-eWa28FrOR217z8HcA_lO8_5XNi';
         return;
       }
 
-      const BACKEND_URL = 'https://contextos-backend.onrender.com'; // ⚠️ same URL as elsewhere — keep in sync
+      const BACKEND_URL = 'https://contextos-apc7.onrender.com'; // ⚠️ same URL as elsewhere — keep in sync
 
       restoreBtn.disabled = true;
       restoreBtn.textContent = 'Restoring...';
@@ -606,7 +606,7 @@ const SUPABASE_ANON_KEY = 'sb_publishable_tyrQ-eWa28FrOR217z8HcA_lO8_5XNi';
     refreshQuickPromptState();
 
     quickGenerateBtn.addEventListener('click', () => {
-      const BACKEND_URL = 'https://contextos-backend.onrender.com'; // ⚠️ same URL as elsewhere — keep in sync
+      const BACKEND_URL = 'https://contextos-apc7.onrender.com'; // ⚠️ same URL as elsewhere — keep in sync
 
       quickGenerateBtn.disabled = true;
       quickGenerateBtn.textContent = 'Generating...';
