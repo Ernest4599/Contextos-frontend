@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ContextOS — License Created</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="proj-header">
+  <span class="proj-header-title">License Created</span>
+</header>
+
+<main class="output-main" id="verifyingState">
+  <div class="progress-ring-wrap" style="width:120px;height:120px;">
+    <svg viewBox="0 0 200 200" width="120" height="120">
+      <circle cx="100" cy="100" r="88" fill="none" stroke="#1c2230" stroke-width="14"/>
+      <circle cx="100" cy="100" r="88" fill="none" stroke="#2f6bff" stroke-width="14"
+              stroke-linecap="round" stroke-dasharray="140 553"
+              transform="rotate(-90 100 100)">
+        <animateTransform attributeName="transform" type="rotate" from="0 100 100" to="360 100 100" dur="1s" repeatCount="indefinite"/>
+      </circle>
+    </svg>
+  </div>
+  <p class="processing-sub" style="margin-top:20px;">Verifying your payment...</p>
+</main>
+
+<main class="output-main" id="successState" hidden>
+  <div class="success-icon">
+    <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  </div>
+  <h1 class="output-title">You're Pro!</h1>
+  <p class="output-sub">Save these two things somewhere safe right now. They will not be shown again.</p>
+
+  <div class="qp-field" style="text-align:left;">
+    <label class="qp-label">License ID</label>
+    <pre class="prompt-box" id="licenseIdBox" style="max-height:none; margin-bottom:16px;"></pre>
+
+    <label class="qp-label">Recovery Key</label>
+    <pre class="prompt-box" id="recoveryKeyBox" style="max-height:none;"></pre>
+  </div>
+
+  <button class="generate-btn copy-btn" id="copyBothBtn" style="margin-top:20px;">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+    Copy Both
+  </button>
+
+  <button class="action-btn" id="continueHomeBtn" style="margin-top:14px;">I've saved it — Continue</button>
+</main>
+
+<main class="output-main" id="errorState" hidden>
+  <h1 class="output-title">Something went wrong</h1>
+  <p class="output-sub" id="errorMessage">Could not verify your payment.</p>
+  <a href="purchase.html" class="action-btn" style="display:block; text-align:center; text-decoration:none;">Try Again</a>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>

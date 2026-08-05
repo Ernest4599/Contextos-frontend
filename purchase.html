@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ContextOS — Get Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="proj-header">
+  <a href="home.html" class="icon-btn" aria-label="Back">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <span class="proj-header-title">Get Pro</span>
+  <span class="header-spacer" aria-hidden="true"></span>
+</header>
+
+<main class="auth-main">
+  <div class="auth-intro">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+    <h1 class="auth-title" id="purchaseTitle">Get ContextOS Pro</h1>
+    <p class="auth-sub" id="purchaseSub">Unlock 100 imports, priority processing, and future updates.</p>
+  </div>
+
+  <div class="settings-row" style="margin-bottom:24px; cursor:default;">
+    <span class="settings-icon">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 5v10l-9 5-9-5V7l9-5z"/><path d="M3 7l9 5 9-5"/><path d="M12 12v10"/></svg>
+    </span>
+    <span class="settings-text">
+      <span class="settings-label">Starter — ₦20,000</span>
+      <span class="settings-value">100 imports · Device-based license · Recovery Key included</span>
+    </span>
+  </div>
+
+  <p class="auth-error" id="purchaseError" hidden></p>
+
+  <button class="generate-btn" id="buyProBtn">Pay with Paystack</button>
+
+  <p class="import-note" style="margin-top:20px;">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
+    No account or email required. You'll get a License ID and Recovery Key after payment — save them, they can't be shown again.
+  </p>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>

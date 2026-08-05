@@ -41,6 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
+  /* ===== Backend URL (shared everywhere) ===== */
+  const BACKEND_URL = 'https://contextos-apc7.onrender.com';
+
   /* ===== Supabase client (shared by sidebar + auth.html) =====
      ⚠️ Fill in your own Supabase project's URL and public anon key
      below. The anon key is SAFE to expose in frontend code — that's
@@ -48,9 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
      your Supabase dashboard → Project Settings → API.
      Created once here; every page that loads supabase-js via CDN
      and includes this script reuses the same client. */
-  const SUPABASE_URL = 'https://etytjdrcxekbsjamcxyg.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0eXRqZHJjeGVrYnNqYW1jeHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4Mzk2MTgsImV4cCI6MjEwMTQxNTYxOH0.I00XQLx0dE6eOU3YMwYYO0VzyHwQV_5I1lF8S7NiyyU';
- 
+  const SUPABASE_URL = 'https://your-project.supabase.co';
+  const SUPABASE_ANON_KEY = 'your-anon-public-key-here';
   const sb = window.supabase
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
     : null;
@@ -163,6 +165,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
   const importOptions = document.querySelectorAll('.import-option');
   const continueBtn = document.getElementById('continueBtn');
   let importPayload = '';
+  let importSource = null; // 'link' | 'paste' | 'file'
 
   function selectImportPanel(targetId){
     document.querySelectorAll('.import-panel').forEach(p => {
@@ -190,12 +193,14 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
   if (linkInput){
     linkInput.addEventListener('input', () => {
       importPayload = linkInput.value.trim();
+      importSource = 'link';
       refreshContinueState();
     });
   }
   if (pasteInput){
     pasteInput.addEventListener('input', () => {
       importPayload = pasteInput.value.trim();
+      importSource = 'paste';
       refreshContinueState();
     });
   }
@@ -217,6 +222,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
     const reader = new FileReader();
     reader.onload = () => {
       importPayload = reader.result;
+      importSource = 'file';
       if (fileNameEl) fileNameEl.textContent = `Selected: ${file.name}`;
       refreshContinueState();
     };
@@ -224,8 +230,38 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
   }
 
   if (continueBtn){
-    continueBtn.addEventListener('click', () => {
-      localStorage.setItem('contextos_input', importPayload || 'Untitled conversation import');
+    continueBtn.addEventListener('click', async () => {
+      continueBtn.disabled = true;
+
+      if (importSource === 'link'){
+        // Actually use the backend's safe link-fetching endpoint instead
+        // of sending the raw URL as if it were the conversation itself.
+        continueBtn.textContent = 'Fetching link...';
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/fetch-link`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: importPayload })
+          });
+          const data = await res.json();
+          if (!res.ok){
+            alert(data.error || 'Could not fetch that link.');
+            continueBtn.disabled = false;
+            continueBtn.textContent = 'Analyze Conversation';
+            return;
+          }
+          localStorage.setItem('contextos_input', data.text || 'No content found at that link.');
+        } catch (err){
+          console.error('Link fetch failed:', err);
+          alert('Could not reach the backend to fetch that link. Check your connection and try again.');
+          continueBtn.disabled = false;
+          continueBtn.textContent = 'Analyze Conversation';
+          return;
+        }
+      } else {
+        localStorage.setItem('contextos_input', importPayload || 'Untitled conversation import');
+      }
+
       localStorage.setItem('contextos_start_time', Date.now().toString());
       window.location.href = 'processing.html';
     });
@@ -257,31 +293,46 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
       } else {
         const rawInput = localStorage.getItem('contextos_input') || '';
 
-        // ⚠️ Replace this URL with your real Render backend URL once deployed
-        const BACKEND_URL = 'https://contextos-apc7.onrender.com';
-
         fetch(`${BACKEND_URL}/api/analyze`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ conversation: rawInput, deviceFingerprint: getDeviceFingerprint() })
+          body: JSON.stringify({
+            conversation: rawInput,
+            deviceFingerprint: getDeviceFingerprint(),
+            projectId: getDeviceFingerprint() // ties each device to its OWN Project State, not a shared global one
+          })
         })
-        .then(res => res.json())
-        .then(data => {
+        .then(res => res.json().then(data => ({ ok: res.ok, status: res.status, data })))
+        .then(({ ok, status, data }) => {
+          if (status === 402){
+            // Free/license credits exhausted — send to the real Purchase
+            // screen instead of showing this as regular generated output.
+            localStorage.removeItem('contextos_input');
+            window.location.href = 'purchase.html?reason=limit';
+            return;
+          }
+          if (!ok){
+            // Real error from the backend (e.g. no AI credits, database
+            // issue) — show the ACTUAL message instead of silently
+            // pretending it succeeded.
+            localStorage.setItem('contextos_output', data.error || 'The backend returned an error. Please try again.');
+            localStorage.removeItem('contextos_input');
+            window.location.href = 'context-package.html';
+            return;
+          }
           const prompt = data.prompt || 'No prompt returned by the backend.';
           localStorage.setItem('contextos_output', prompt);
           localStorage.removeItem('contextos_input');
-          if (data.prompt){
-            savePackageToHistory({
-              title: 'Imported Conversation',
-              prompt,
-              source: 'import'
-            });
-          }
+          savePackageToHistory({
+            title: 'Imported Conversation',
+            prompt,
+            source: 'import'
+          });
           window.location.href = 'context-package.html';
         })
         .catch(err => {
           console.error('Backend request failed:', err);
-          localStorage.setItem('contextos_output', 'Something went wrong analyzing your conversation. Please check your backend URL and try again.');
+          localStorage.setItem('contextos_output', 'Could not reach the backend at all. Check your internet connection and that the backend is deployed and running.');
           window.location.href = 'context-package.html';
         });
       }
@@ -406,6 +457,32 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
       });
     }
 
+    const forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
+    if (forgotPasswordBtn){
+      forgotPasswordBtn.addEventListener('click', async () => {
+        const email = emailField.value.trim();
+        if (!email){
+          showAuthError('Enter your email above first, then tap "Forgot Password?"');
+          return;
+        }
+        forgotPasswordBtn.disabled = true;
+        forgotPasswordBtn.textContent = 'Sending...';
+
+        const { error } = await sb.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin + window.location.pathname.replace('auth.html', 'reset-password.html')
+        });
+
+        forgotPasswordBtn.disabled = false;
+        forgotPasswordBtn.textContent = 'Forgot Password?';
+
+        if (error){
+          showAuthError(error.message);
+          return;
+        }
+        alert('Check your email for a password reset link.');
+      });
+    }
+
     const linkLicenseBtn = document.getElementById('linkLicenseBtn');
     if (linkLicenseBtn){
       linkLicenseBtn.addEventListener('click', async () => {
@@ -422,7 +499,6 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
           return;
         }
 
-        const BACKEND_URL = 'https://contextos-apc7.onrender.com'; // ⚠️ same URL as elsewhere — keep in sync
 
         try {
           const res = await fetch(`${BACKEND_URL}/api/account/link-license`, {
@@ -525,7 +601,6 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
         return;
       }
 
-      const BACKEND_URL = 'https://contextos-apc7.onrender.com'; // ⚠️ same URL as elsewhere — keep in sync
 
       restoreBtn.disabled = true;
       restoreBtn.textContent = 'Restoring...';
@@ -606,7 +681,6 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
     refreshQuickPromptState();
 
     quickGenerateBtn.addEventListener('click', () => {
-      const BACKEND_URL = 'https://contextos-apc7.onrender.com'; // ⚠️ same URL as elsewhere — keep in sync
 
       quickGenerateBtn.disabled = true;
       quickGenerateBtn.textContent = 'Generating...';
@@ -621,8 +695,12 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
           deviceFingerprint: getDeviceFingerprint()
         })
       })
-      .then(res => res.json().then(data => ({ ok: res.ok, data })))
-      .then(({ ok, data }) => {
+      .then(res => res.json().then(data => ({ ok: res.ok, status: res.status, data })))
+      .then(({ ok, status, data }) => {
+        if (status === 402){
+          window.location.href = 'purchase.html?reason=limit';
+          return;
+        }
         if (!ok){
           alert(data.error || 'Something went wrong generating your prompt.');
           quickGenerateBtn.disabled = false;
@@ -644,6 +722,151 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
         quickGenerateBtn.disabled = false;
         quickGenerateBtn.textContent = 'Generate Context Package';
       });
+    });
+  }
+
+  /* ===== Purchase screen (purchase.html) ===== */
+  const buyProBtn = document.getElementById('buyProBtn');
+  if (buyProBtn){
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('reason') === 'limit'){
+      const titleEl = document.getElementById('purchaseTitle');
+      const subEl = document.getElementById('purchaseSub');
+      if (titleEl) titleEl.textContent = "You've used your free generations";
+      if (subEl) subEl.textContent = 'Get Pro to keep creating Context Packages.';
+    }
+
+    const purchaseError = document.getElementById('purchaseError');
+
+    buyProBtn.addEventListener('click', () => {
+      purchaseError.hidden = true;
+      buyProBtn.disabled = true;
+      buyProBtn.textContent = 'Redirecting...';
+
+      fetch(`${BACKEND_URL}/api/license/purchase/init`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: 'starter' })
+      })
+      .then(res => res.json().then(data => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok){
+          purchaseError.textContent = data.error || 'Could not start payment.';
+          purchaseError.hidden = false;
+          buyProBtn.disabled = false;
+          buyProBtn.textContent = 'Pay with Paystack';
+          return;
+        }
+        // Save the reference so purchase-success.html can verify this
+        // exact payment once Paystack redirects back
+        localStorage.setItem('contextos_pending_reference', data.reference);
+        window.location.href = data.authorizationUrl;
+      })
+      .catch(err => {
+        console.error('Purchase init failed:', err);
+        purchaseError.textContent = 'Could not reach the backend. Check your connection and try again.';
+        purchaseError.hidden = false;
+        buyProBtn.disabled = false;
+        buyProBtn.textContent = 'Pay with Paystack';
+      });
+    });
+  }
+
+  /* ===== Purchase Success screen (purchase-success.html) ===== */
+  const verifyingState = document.getElementById('verifyingState');
+  if (verifyingState){
+    const successState = document.getElementById('successState');
+    const errorState = document.getElementById('errorState');
+    const errorMessage = document.getElementById('errorMessage');
+
+    function showPurchaseError(message){
+      verifyingState.hidden = true;
+      errorState.hidden = false;
+      errorMessage.textContent = message;
+    }
+
+    const urlParams2 = new URLSearchParams(window.location.search);
+    const reference = urlParams2.get('reference') || urlParams2.get('trxref') || localStorage.getItem('contextos_pending_reference');
+
+    if (!reference){
+      showPurchaseError('No payment reference found. If you completed a payment, please contact support with your payment details.');
+    } else {
+      fetch(`${BACKEND_URL}/api/license/purchase/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reference, deviceFingerprint: getDeviceFingerprint() })
+      })
+      .then(res => res.json().then(data => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok){
+          showPurchaseError(data.error || 'Could not verify your payment.');
+          return;
+        }
+
+        localStorage.removeItem('contextos_pending_reference');
+        verifyingState.hidden = true;
+        successState.hidden = false;
+
+        document.getElementById('licenseIdBox').textContent = data.licenseId || '(already issued — check your records)';
+        document.getElementById('recoveryKeyBox').textContent = data.recoveryKey || '(not shown again — contact support if lost)';
+
+        const copyBothBtn = document.getElementById('copyBothBtn');
+        if (copyBothBtn){
+          copyBothBtn.addEventListener('click', () => {
+            const text = `License ID: ${data.licenseId}\nRecovery Key: ${data.recoveryKey}`;
+            navigator.clipboard.writeText(text).then(() => {
+              copyBothBtn.textContent = 'Copied!';
+              setTimeout(() => { copyBothBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy Both'; }, 1800);
+            });
+          });
+        }
+
+        const continueHomeBtn = document.getElementById('continueHomeBtn');
+        if (continueHomeBtn){
+          continueHomeBtn.addEventListener('click', () => {
+            window.location.href = 'home.html';
+          });
+        }
+      })
+      .catch(err => {
+        console.error('Purchase verify failed:', err);
+        showPurchaseError('Could not reach the backend to verify your payment. If you were charged, please contact support.');
+      });
+    }
+  }
+
+  /* ===== Reset Password screen (reset-password.html) ===== */
+  const setPasswordBtn = document.getElementById('setPasswordBtn');
+  if (setPasswordBtn && sb){
+    const newPasswordField = document.getElementById('newPassword');
+    const resetError = document.getElementById('resetError');
+
+    setPasswordBtn.addEventListener('click', async () => {
+      const newPassword = newPasswordField.value;
+      resetError.hidden = true;
+
+      if (!newPassword || newPassword.length < 8){
+        resetError.textContent = 'Password must be at least 8 characters.';
+        resetError.hidden = false;
+        return;
+      }
+
+      setPasswordBtn.disabled = true;
+      setPasswordBtn.textContent = 'Saving...';
+
+      const { error } = await sb.auth.updateUser({ password: newPassword });
+
+      setPasswordBtn.disabled = false;
+      setPasswordBtn.textContent = 'Set New Password';
+
+      if (error){
+        resetError.textContent = error.message;
+        resetError.hidden = false;
+        return;
+      }
+
+      alert('Password updated! Please sign in with your new password.');
+      window.location.href = 'auth.html';
     });
   }
 
