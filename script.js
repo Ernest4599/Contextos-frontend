@@ -870,4 +870,83 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /* ===== My License screen (license.html) ===== */
+  const licenseLoading = document.getElementById('licenseLoading');
+  if (licenseLoading){
+    const licenseContent = document.getElementById('licenseContent');
+    const planLabel = document.getElementById('planLabel');
+    const creditsLabel = document.getElementById('creditsLabel');
+    const licenseIdRow = document.getElementById('licenseIdRow');
+    const licenseIdLabel = document.getElementById('licenseIdLabel');
+    const buyCreditsBtn = document.getElementById('buyCreditsBtn');
+    const getProLink = document.getElementById('getProLink');
+    const licenseError = document.getElementById('licenseError');
+
+    fetch(`${BACKEND_URL}/api/license/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ deviceFingerprint: getDeviceFingerprint() })
+    })
+    .then(res => res.json().then(data => ({ ok: res.ok, data })))
+    .then(({ ok, data }) => {
+      licenseLoading.hidden = true;
+      licenseContent.hidden = false;
+
+      if (!ok){
+        licenseError.textContent = data.error || 'Could not check your license status.';
+        licenseError.hidden = false;
+        return;
+      }
+
+      if (data.licensed){
+        planLabel.textContent = `${data.plan.charAt(0).toUpperCase()}${data.plan.slice(1)} Plan`;
+        creditsLabel.textContent = `${data.creditsRemaining} imports remaining`;
+        licenseIdRow.hidden = false;
+        licenseIdLabel.textContent = data.licenseId || '—';
+        buyCreditsBtn.hidden = false;
+
+        buyCreditsBtn.addEventListener('click', () => {
+          buyCreditsBtn.disabled = true;
+          buyCreditsBtn.textContent = 'Redirecting...';
+
+          fetch(`${BACKEND_URL}/api/license/purchase/init`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ plan: 'credits100', licenseId: data.licenseId })
+          })
+          .then(res => res.json().then(d => ({ ok: res.ok, data: d })))
+          .then(({ ok: initOk, data: initData }) => {
+            if (!initOk){
+              licenseError.textContent = initData.error || 'Could not start payment.';
+              licenseError.hidden = false;
+              buyCreditsBtn.disabled = false;
+              buyCreditsBtn.textContent = 'Buy 100 More Credits — ₦7,000';
+              return;
+            }
+            localStorage.setItem('contextos_pending_reference', initData.reference);
+            window.location.href = initData.authorizationUrl;
+          })
+          .catch(err => {
+            console.error('Credit top-up init failed:', err);
+            licenseError.textContent = 'Could not reach the backend. Check your connection and try again.';
+            licenseError.hidden = false;
+            buyCreditsBtn.disabled = false;
+            buyCreditsBtn.textContent = 'Buy 100 More Credits — ₦7,000';
+          });
+        });
+      } else {
+        planLabel.textContent = 'Free Plan';
+        creditsLabel.textContent = `${data.creditsRemaining} free imports remaining`;
+        getProLink.hidden = false;
+      }
+    })
+    .catch(err => {
+      console.error('License verify failed:', err);
+      licenseLoading.hidden = true;
+      licenseContent.hidden = false;
+      licenseError.textContent = 'Could not reach the backend to check your license status.';
+      licenseError.hidden = false;
+    });
+  }
+
 });

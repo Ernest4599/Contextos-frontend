@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ContextOS — My License</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="proj-header">
+  <a href="mainsetting.html" class="icon-btn" aria-label="Back">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <span class="proj-header-title">My License</span>
+  <span class="header-spacer" aria-hidden="true"></span>
+</header>
+
+<main class="auth-main" id="licenseLoading">
+  <p class="processing-sub" style="text-align:center; margin-top:40px;">Checking your license status...</p>
+</main>
+
+<main class="auth-main" id="licenseContent" hidden>
+  <div class="settings-row" style="cursor:default; margin-bottom:24px;">
+    <span class="settings-icon">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 5v10l-9 5-9-5V7l9-5z"/><path d="M3 7l9 5 9-5"/><path d="M12 12v10"/></svg>
+    </span>
+    <span class="settings-text">
+      <span class="settings-label" id="planLabel">—</span>
+      <span class="settings-value" id="creditsLabel">—</span>
+    </span>
+  </div>
+
+  <div id="licenseIdRow" class="settings-row" style="cursor:default; margin-bottom:24px;" hidden>
+    <span class="settings-icon">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/></svg>
+    </span>
+    <span class="settings-text">
+      <span class="settings-label">License ID</span>
+      <span class="settings-value" id="licenseIdLabel">—</span>
+    </span>
+  </div>
+
+  <p class="auth-error" id="licenseError" hidden></p>
+
+  <!-- Shown only for existing Pro licenses -->
+  <button class="generate-btn" id="buyCreditsBtn" hidden>Buy 100 More Credits — ₦7,000</button>
+
+  <!-- Shown only for free-tier devices -->
+  <a href="purchase.html" class="generate-btn" id="getProLink" style="display:block; text-align:center; text-decoration:none;" hidden>Get Pro</a>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>

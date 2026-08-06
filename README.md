@@ -117,3 +117,10 @@ Fixed to match the pattern Quick Prompt already used correctly: check `res.ok` f
 
 - No general "Get Pro" entry point exists yet outside the limit-exceeded redirect — e.g. no button in Settings to voluntarily upgrade anytime. Only reachable via hitting the free limit right now.
 - `FRONTEND_URL` needs to be set on the backend (Render) once this frontend has a real public URL, or Paystack's redirect-back step won't know where to send users.
+
+## New: license.html — solves two gaps at once
+
+- **Credit top-up now purchasable** — previously the ₦7,000/100-credit backend endpoint existed with zero UI. Now: Settings → My License shows current plan + credits remaining, and Pro users see a "Buy 100 More Credits" button that actually works.
+- **Voluntary "Get Pro" entry point now exists** — previously the only way to reach `purchase.html` was hitting the free limit. Now free-tier users see a "Get Pro" button right on this same screen, anytime.
+
+Reachable via Settings → "My License" (new row, added between Packages and Recovery Key).
