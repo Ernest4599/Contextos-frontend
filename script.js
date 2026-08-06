@@ -51,8 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
      your Supabase dashboard → Project Settings → API.
      Created once here; every page that loads supabase-js via CDN
      and includes this script reuses the same client. */
-  const SUPABASE_URL = 'https://your-project.supabase.co';
-  const SUPABASE_ANON_KEY = 'your-anon-public-key-here';
+  const SUPABASE_URL = 'https://etytjdrcxekbsjamcxyg.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0eXRqZHJjeGVrYnNqYW1jeHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4Mzk2MTgsImV4cCI6MjEwMTQxNTYxOH0.I00XQLx0dE6eOU3YMwYYO0VzyHwQV_5I1lF8S7NiyyU';
   const sb = window.supabase
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
     : null;
