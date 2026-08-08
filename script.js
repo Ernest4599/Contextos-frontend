@@ -727,7 +727,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ===== Purchase screen (purchase.html) ===== */
   const buyProBtn = document.getElementById('buyProBtn');
-  if (buyProBtn){
+  const buyMiniBtn = document.getElementById('buyMiniBtn');
+  if (buyProBtn || buyMiniBtn){
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('reason') === 'limit'){
       const titleEl = document.getElementById('purchaseTitle');
@@ -738,23 +739,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const purchaseError = document.getElementById('purchaseError');
 
-    buyProBtn.addEventListener('click', () => {
+    function startPurchase(plan, btn, originalLabel){
       purchaseError.hidden = true;
-      buyProBtn.disabled = true;
-      buyProBtn.textContent = 'Redirecting...';
+      btn.disabled = true;
+      btn.textContent = 'Redirecting...';
 
       fetch(`${BACKEND_URL}/api/license/purchase/init`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan: 'starter' })
+        body: JSON.stringify({ plan })
       })
       .then(res => res.json().then(data => ({ ok: res.ok, data })))
       .then(({ ok, data }) => {
         if (!ok){
           purchaseError.textContent = data.error || 'Could not start payment.';
           purchaseError.hidden = false;
-          buyProBtn.disabled = false;
-          buyProBtn.textContent = 'Pay with Paystack';
+          btn.disabled = false;
+          btn.textContent = originalLabel;
           return;
         }
         // Save the reference so purchase-success.html can verify this
@@ -766,10 +767,17 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Purchase init failed:', err);
         purchaseError.textContent = 'Could not reach the backend. Check your connection and try again.';
         purchaseError.hidden = false;
-        buyProBtn.disabled = false;
-        buyProBtn.textContent = 'Pay with Paystack';
+        btn.disabled = false;
+        btn.textContent = originalLabel;
       });
-    });
+    }
+
+    if (buyProBtn){
+      buyProBtn.addEventListener('click', () => startPurchase('starter', buyProBtn, 'Pay with Paystack — Starter'));
+    }
+    if (buyMiniBtn){
+      buyMiniBtn.addEventListener('click', () => startPurchase('mini', buyMiniBtn, 'Pay with Paystack — Mini'));
+    }
   }
 
   /* ===== Purchase Success screen (purchase-success.html) ===== */

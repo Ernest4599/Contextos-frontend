@@ -124,3 +124,11 @@ Fixed to match the pattern Quick Prompt already used correctly: check `res.ok` f
 - **Voluntary "Get Pro" entry point now exists** — previously the only way to reach `purchase.html` was hitting the free limit. Now free-tier users see a "Get Pro" button right on this same screen, anytime.
 
 Reachable via Settings → "My License" (new row, added between Packages and Recovery Key).
+
+## New: Mini plan on purchase.html
+
+Two plan cards now, both with strikethrough "was" pricing:
+- **Mini** — ~~₦14,000~~ ₦7,000 (15 imports)
+- **Starter** — ~~₦55,000~~ ₦20,000 (100 imports)
+
+`buyMiniBtn` and `buyProBtn` share one reusable `startPurchase(plan, btn, label)` function instead of duplicated logic — reduces risk of the two buttons drifting out of sync if the purchase flow changes later.
